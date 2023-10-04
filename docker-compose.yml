@@ -1,30 +1,12 @@
 version: '3.1'
 
-
-# Default ${TEAMCITY_VERSION} is defined in .env file
-
-# ./buildserver_pgdata - Posgres DB data_dir
 # ./data_dir - TeamCity data_dir directory
 # ./teamcity-server-logs - logs of primary TeamCity server
-# ./agents/agent-1/conf - configuration directory for the first build agent
-# ./agents/agent-1/conf - configuration directory for the second build agent
+# ./agent_conf - configuration directory for the build agent
 
 services:
-#  db:
-#    image: postgres:latest
-#    restart: always
-#    environment:
-#      - POSTGRES_PASSWORD=teamcity_password
-#      - POSTGRES_USER=teamcity_user
-#      - POSTGRES_DB=teamcity_db
-#      - PG_DATA=/var/lib/postgresql/data_dir
-#    volumes:
-#      - ./buildserver_pgdata:/var/lib/postgresql/data_dir
-#    ports:
-#      - 5433:5432
-
   teamcity:
-    image: jetbrains/teamcity-server:${TEAMCITY_VERSION}
+    image: jetbrains/teamcity-server:2023.05.3
     ports:
       - "8112:8111"
     volumes:
@@ -32,10 +14,9 @@ services:
       - ./teamcity-server-logs:/opt/teamcity/logs
 
   teamcity-agent:
-    image: jetbrains/teamcity-agent:${TEAMCITY_VERSION}-linux-sudo
+    image: jetbrains/teamcity-agent:2023.05.3-linux-sudo
     privileged: true
     user: root
-
     volumes:
       - ./agent_conf:/data_dir/teamcity_agent/conf
     environment:
@@ -43,10 +24,3 @@ services:
       - DOCKER_IN_DOCKER=start
     depends_on:
       - teamcity
-#  teamcity-agent-2:
-#    image: jetbrains/teamcity-agent:${TEAMCITY_VERSION}-linux-sudo
-#    privileged: true
-#    volumes:
-#      - ./agents/agent-2/conf:/data_dir/teamcity_agent/conf
-#    environment:
-#      - DOCKER_IN_DOCKER=start
